@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI4Jobs — Register</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<ul class="bg-bubbles">
+  <li></li><li></li><li></li><li></li><li></li><li></li>
+</ul>
+
+<div class="container">
+  <h2>Register</h2>
+  {% if error %}
+    <div class="flash error">{{ error }}</div>
+  {% endif %}
+  <form method="POST" action="/register">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+    <button type="submit">Register</button>
+  </form>
+  <p style="text-align:center;margin-top:10px;">
+    Already have an account? <a href="/">Login</a>
+  </p>
+</div>
+
+</body>
+</html>

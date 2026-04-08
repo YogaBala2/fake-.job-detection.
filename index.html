@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI4Jobs - Fake Job Detector</title>
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 10px;
+      background: rgba(255,255,255,0.1);
+      color: #2c3e50;
+      font-size: 32px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover { transform: translateY(-5px); }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      resize: vertical;
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    textarea:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52,152,219,0.3);
+      outline: none;
+    }
+
+    .button-group {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 14px 25px;
+      margin: 5px;
+      background: #3498db;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .clear-btn { background: #e74c3c; }
+    .clear-btn:hover { background: #c0392b; }
+
+    .logout-btn { background: #f39c12; }
+    .logout-btn:hover { background: #d35400; }
+
+    .result {
+      margin-top: 35px;
+      padding: 25px;
+      border-radius: 16px;
+      font-size: 20px;
+      text-align: center;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .result:hover { transform: translateY(-3px); }
+
+    .fake { background: #ffcccc; color: #c0392b; }
+    .real { background: #ccffcc; color: #27ae60; }
+    .suspicious { background: #fff3cc; color: #d68910; }
+
+    .confidence {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: normal;
+      color: #555;
+    }
+
+    .explanation {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #c0392b;
+    }
+
+    .info-section {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .info-box {
+      flex: 1 1 45%;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .info-title {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  
+  <header>AI4Jobs — Fake Job Posting Detector</header>
+
+  <div class="container">
+    <form method="POST" id="jobForm">
+      <!-- FIXED: job_text instead of text -->
+      <textarea name="jobtext" placeholder="Paste job description here..." required>{{ job_text or '' }}</textarea>
+      
+      <div class="button-group">
+        <button type="submit">Check</button>
+        <button type="button" class="clear-btn" onclick="clearAll()">Clear</button>
+        <a href="{{ url_for('logout') }}"><button type="button" class="logout-btn">Logout</button></a>
+      </div>
+    </form>
+
+    {% if result %}
+      <div class="result 
+           {% if result=='FAKE' %}fake{% elif result=='SUSPICIOUS' %}suspicious{% else %}real{% endif %}"
+           id="resultBox">
+        Result: {{ result }}
+
+        {% if prob %}
+          <span class="confidence">Confidence: {{ (prob*100)|round(2) }}%</span>
+        {% endif %}
+
+        {% if explanation %}
+          <span class="explanation">Reason: {{ explanation }}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if company %}
+      <div class="info-section">
+        <div class="info-box">
+          <div class="info-title">🏢 Company Details</div>
+          <p><b>Name:</b> {{ company.name }}</p>
+          <p><b>Age:</b> {{ company.age }} years</p>
+          <p><b>Location:</b> {{ company.location }}</p>
+          <p><b>Status:</b> {{ company.status }}</p>
+        </div>
+
+        <div class="info-box">
+          <div class="info-title">📝 Previous Feedback</div>
+          {% if feedback %}
+            {% for item in feedback %}
+              <p>• {{ item }}</p>
+            {% endfor %}
+          {% else %}
+            <p>No feedback available.</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function clearAll() {
+      document.querySelector('textarea').value = '';
+      window.location.href = "/dashboard";  // Clears everything
+    }
+  </script>
+
+</body>
+</html>
